@@ -51,5 +51,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('cp useref');
+    grunt.registerTask('build', 'cp:temp useref cp:live');
 };
