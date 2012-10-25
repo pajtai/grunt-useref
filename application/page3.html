@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset=utf-8>
+        <title>Page 3</title>
+    </head>
+    <body>
+        <h1>Page 3</h1>
+        <p>Console output should be:</p>
+        <pre>
+            starting aVendor
+            starting bVendor
+            starting script 1
+            called a vendor method
+            called b vendor method
+            starting script 2
+            called a vendor method
+            called b vendor method
+        </pre>
+        <!-- build:js scripts/page3.js -->
+        <script type="text/javascript" src="scripts/vendor/aVendor.js"></script>
+        <script type="text/javascript" src="scripts/vendor/bVendor.js"></script>
+        <script type="text/javascript" src="scripts/script1.js"></script>
+        <script type="text/javascript" src="scripts/script2.js"></script>
+        <!-- enbduild -->
+    </body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset=utf-8>
+        <title>Page 1</title>
+    </head>
+    <body>
+        <h1>Page 1</h1>
+        <p>Console output should be:</p>
+        <pre>
+            starting aVendor
+            starting bVendor
+            starting script 1
+            called a vendor method
+            called b vendor method
+        </pre>
+        <!-- build:js script/vendor.js -->
+        <script type="text/javascript" src="scripts/vendor/aVendor.js"></script>
+        <script type="text/javascript" src="scripts/vendor/bVendor.js"></script>
+        <!-- endbuild -->
+        
+        <script type="text/javascript" src="scripts/script1.js"></script>
+    </body>
+</html>
