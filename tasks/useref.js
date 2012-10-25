@@ -72,8 +72,11 @@ module.exports = function (grunt) {
         return sections;
     }
 
-    grunt.registerMultiTask('usemin', 'Replaces references to non-minified scripts / stylesheets', function () {
+    grunt.registerMultiTask('useref', 'Replaces references to non-minified scripts / stylesheets', function () {
 
+        // TODO: kick off usemin-handler and add packaga.json rev
+        // Assumption is that we are now in a temp directory, so act accordingly
+        
         var name = this.target,
             data = this.data,
             files = grunt.file.expand(data);
@@ -104,15 +107,16 @@ module.exports = function (grunt) {
 
     });
 
+    // TODO - combine this with regular usemin
     grunt.registerMultiTask('usemin-handler', 'Using HTML markup as the primary source of information', function () {
+
         // collect files
         var files = grunt.file.expandFiles(this.data);
 
         // concat / min / css / rjs config
         var concat = grunt.config('concat') || {},
             min = grunt.config('min') || {},
-            css = grunt.config('css') || {},
-            rjs = grunt.config('rjs') || {};
+            css = grunt.config('css') || {};
 
         grunt.log
             .writeln('Going through ' + grunt.log.wordlist(files) + ' to update the config')
@@ -132,6 +136,7 @@ module.exports = function (grunt) {
                     parts = dest.split(':'),
                     type = parts[0],
                     output = parts[1];
+
                 // Handle absolute path (i.e. with respect to th eserver root)
                 if (output[0] === '/') {
                     output = output.substr(1);
@@ -139,21 +144,8 @@ module.exports = function (grunt) {
 
                 // parse out the list of assets to handle, and update the grunt config accordingly
                 var assets = lines.map(function (tag) {
-                    var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
 
-                    // RequireJS uses a data-main attribute on the script tag to tell it
-                    // to load up the main entry point of the amp app
-                    //
-                    // First time we findd one, we update the name / mainConfigFile
-                    // values. If a name of mainConfigFile value are already set, we skip
-                    // it, so only one match should happen and default config name in
-                    // original Gruntfile is used if any.
-                    var main = tag.match(/data-main=['"]([^'"]+)['"]/);
-                    if (main) {
-                        rjs.out = rjs.out || output;
-                        rjs.name = rjs.name || main[1];
-                        asset += ',' + output;
-                    }
+                    var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
 
                     return asset;
                 }).reduce(function (a, b) {
@@ -169,10 +161,6 @@ module.exports = function (grunt) {
                 // update concat config for this block
                 concat[output] = assets;
                 grunt.config('concat', concat);
-
-                // update rjs config as well, as during path lookup we might have
-                // updated it on data-main attribute
-                grunt.config('rjs', rjs);
 
                 grunt.log.writeln("**** output is: " + JSON.stringify(output));
                 // min config, only for js type block
@@ -208,14 +196,15 @@ module.exports = function (grunt) {
     // usemin:pre:* are used to preprocess files with the blocks and directives
     // before going through the global replace
     grunt.registerHelper('usemin:pre:html', function (content) {
+
         // XXX extension-specific for get blocks too.
         //
         // Eg. for each predefined extensions directives may vary. eg <!--
         // directive --> for html, /** directive **/ for css
-        var blocks = getBlocks(content);
+        var blocks = getBlocks(content),
 
         // Determine the linefeed from the content
-        var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
+            linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
 
         // handle blocks
         Object.keys(blocks).forEach(function (key) {
@@ -248,37 +237,15 @@ module.exports = function (grunt) {
         return content.replace(block, indent + '<script src="' + target + '"></script>');
     });
 
-    grunt.registerHelper('usemin:post:css', function (content) {
-        grunt.log.writeln('Update the CSS with new img filenames');
-        content = grunt.helper('replace', content, /url\(\s*['"]([^"']+)["']\s*\)/gm);
-        return content;
-    });
-
     // usemin:post:* are the global replace handlers, they delegate the regexp
     // replace to the replace helper.
     grunt.registerHelper('usemin:post:html', function (content) {
+
         grunt.log.verbose.writeln('Update the HTML to reference our concat/min/revved script files');
         content = grunt.helper('replace', content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
 
         grunt.log.verbose.writeln('Update the HTML with the new css filenames');
         content = grunt.helper('replace', content, /<link[^\>]+href=['"]([^"']+)["']/gm);
-
-        grunt.log.verbose.writeln('Update the HTML with the new img filenames');
-        content = grunt.helper('replace', content, /<img[^\>]+src=['"]([^"']+)["']/gm);
-
-        grunt.log.verbose.writeln('Update the HTML with background imgs, case there is some inline style');
-        content = grunt.helper('replace', content, /url\(\s*['"]([^"']+)["']\s*\)/gm);
-
-        grunt.log.verbose.writeln('Update the HTML with anchors images');
-        content = grunt.helper('replace', content, /<a[^\>]+href=['"]([^"']+)["']/gm);
-
-        return content;
-    });
-
-    grunt.registerHelper('usemin:post:css', function (content) {
-
-        grunt.log.verbose.writeln('Update the CSS with background imgs, case there is some inline style');
-        content = grunt.helper('replace', content, /url\(\s*['"]?([^'"\)]+)['"]?\s*\)/gm);
 
         return content;
     });
@@ -289,7 +256,10 @@ module.exports = function (grunt) {
     // the list of files on the filesystem to guess the actual revision of a file
     //
     grunt.registerHelper('replace', function (content, regexp) {
+
         return content.replace(regexp, function (match, src) {
+            var basename, dirname, filepaths, filepath, filename, res;
+
             //do not touch external files or the root
             if (src.match(/\/\//) || src.match(/^\/$/)) {
                 return match;
@@ -300,14 +270,14 @@ module.exports = function (grunt) {
                 src = src.substr(1);
             }
 
-            var basename = path.basename(src);
-            var dirname = path.dirname(src);
+            basename = path.basename(src);
+            dirname = path.dirname(src);
 
             // XXX files won't change, the filepath should filter the original list
             // of cached files (we need to treat the filename collision -- i.e. 2 files with same names
             // in different subdirectories)
-            var filepaths = grunt.file.expand(path.join('**/*') + basename);
-            var filepath = filepaths.filter(function (f) {
+            filepaths = grunt.file.expand(path.join('**/*') + basename);
+            filepath = filepaths.filter(function (f) {
                 return dirname === path.dirname(f);
             })[0];
 
@@ -315,7 +285,8 @@ module.exports = function (grunt) {
             if (!filepath) {
                 return match;
             }
-            var filename = path.basename(filepath);
+
+            filename = path.basename(filepath);
             // handle the relative prefix (with always unix like path even on win32)
             filename = [dirname, filename].join('/');
 
@@ -324,12 +295,9 @@ module.exports = function (grunt) {
                 return '';
             }
 
-            var res = match.replace(src, filename);
+            res = match.replace(src, filename);
             // output some verbose info on what get replaced
-            grunt.log
-                .ok(src)
-                .writeln('was ' + match)
-                .writeln('now ' + res);
+            grunt.log.ok(src).writeln('was ' + match).writeln('now ' + res);
 
             return res;
         });
