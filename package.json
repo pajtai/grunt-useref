@@ -1,0 +1,23 @@
+{
+    "name": "Useref-Sample",
+    "title": "Useref Sample",
+    "description": "Sample project that demonstrates updating references in html, while mini, concat, & revisioning js",
+    "version": "0.0.1",
+    "homepage": "https://github.com/pajtai/useref-sample",
+    "author": {
+        "name": "Peter Ajtai",
+        "url": "https://github.com/pajtai"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pajtai/useref-sample.git"
+    },
+    "bugs": {
+        "url": "https://github.com/pajtai/useref-sample/issues"
+    },
+    "dependencies": {
+        "grunt-cp": ">=0.1.0",
+        "grunt-yui-compressor": ">=0.1.1"
+    },
+    "keywords": []
+}
