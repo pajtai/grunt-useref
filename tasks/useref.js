@@ -76,7 +76,7 @@ module.exports = function (grunt) {
 
         // TODO: kick off usemin-handler and add packaga.json rev
         // Assumption is that we are now in a temp directory, so act accordingly
-        
+
         var name = this.target,
             data = this.data,
             files = grunt.file.expand(data);

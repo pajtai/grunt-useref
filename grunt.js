@@ -36,6 +36,10 @@ module.exports = function (grunt) {
                 }
             },
 
+            revPackage: {
+                temp: project.dirs.temp + project.files.scripts
+            },
+
             useref: {
                 html: project.dirs.temp + project.files.any + project.files.dot.html
             },
