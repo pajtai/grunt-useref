@@ -42,7 +42,7 @@ module.exports = function (grunt) {
             },
 
             revPackage: {
-                temp: project.dirs.temp + project.files.scripts
+                temp: project.dirs.temp + project.files.scripts + project.files.any + project.files.dot.javascript
             },
 
             useref: {
@@ -57,6 +57,7 @@ module.exports = function (grunt) {
     grunt.initConfig(gruntConfig);
 
     grunt.loadNpmTasks('grunt-cp');
+    grunt.loadNpmTasks('grunt-rev-package');
 
     grunt.loadTasks('./tasks/');
 
