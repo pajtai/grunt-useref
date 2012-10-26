@@ -33,6 +33,11 @@ module.exports = function (grunt) {
                 temp: {
                     src : project.dirs.app,
                     dest: project.dirs.temp
+                },
+
+                live: {
+                    src : project.dirs.temp,
+                    dest: project.dirs.live
                 }
             },
 
@@ -55,5 +60,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('build', 'cp:temp useref cp:live');
+    grunt.registerTask('build', 'cp:temp revPackage cp:live');
 };
