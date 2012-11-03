@@ -1,21 +1,26 @@
 /*global module:false */
 // The line above is used for jshint plugins in your IDE
 
+/**
+ * This file is used when running npm test
+ * @param grunt
+ */
 module.exports = function (grunt) {
     'use strict';
 
     var project = {
 
             dirs: {
-                app     : 'application',
-                live    : 'targets/live',
-                temp    : 'temp'
+                input     : 'test/input',
+                output    : 'test/output',
+                temp      : 'temp'
             },
 
             files: {
                 scripts     : '/scripts',
                 vendor      : '/scripts/vendor',
                 any         : '/**/*',
+                thisDir     : '/*',
                 dot         : {
                     javascript  : '.js',
                     html        : '.html'
@@ -31,20 +36,22 @@ module.exports = function (grunt) {
             // Copy things to a temp dir, and only change things in the temp dir
             cp: {
                 temp: {
-                    src : project.dirs.app,
+                    src : project.dirs.input,
                     dest: project.dirs.temp
                 },
 
-                live: {
+                test: {
                     src : project.dirs.temp,
-                    dest: project.dirs.live
+                    dest: project.dirs.output
                 }
             },
 
+            // For revisioning, we want to skip the "vendor" directory
             revPackage: {
-                temp: project.dirs.temp + project.files.scripts + project.files.any + project.files.dot.javascript
+                temp: project.dirs.temp + project.files.scripts + project.files.thisDir + project.files.dot.javascript
             },
 
+            // Useref will got through all html files in temp
             useref: {
                 html: project.dirs.temp + project.files.any + project.files.dot.html
             },
@@ -61,5 +68,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('build', 'cp:temp revPackage cp:live');
+    grunt.registerTask('build', 'cp:temp revPackage cp:test');
 };
