@@ -68,5 +68,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('test', 'cp:temp revPackage cp:test');
+    grunt.registerTask('test', 'cp:temp useref revPackage cp:test');
 };
