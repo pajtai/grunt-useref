@@ -94,13 +94,25 @@ module.exports = function (grunt) {
 
     function compactContent(blocks) {
 
+        // concat / min / css / rjs config
+        var concat = grunt.config('concat') || {},
+            min = grunt.config('min') || {},
+            css = grunt.config('css') || {},
+            temp = grunt.config('temp');
+
+        // make certain to have a traling slash
+        if (temp[-1] !== '/') {
+            temp += '/';
+        }
+
         grunt.log.subhead('Running compactContent');
 
          Object.keys(blocks).forEach(function (dest) {
-
+                 // Lines are the included scripts w/o the use blocks
              var lines = blocks[dest].slice(1, -1),
                  parts = dest.split(':'),
                  type = parts[0],
+                 // output is the usemin block file
                  output = parts[1];
 
              // Handle absolute path (i.e. with respect to th eserver root)
@@ -108,19 +120,22 @@ module.exports = function (grunt) {
                 output = output.substr(1);
              }
 
-             grunt.log.writeln("type:::: " + type);
-             grunt.log.writeln("output::::: " + output);
+             output = temp + output;
+
+             grunt.log.writeln("type: " + type);
+             grunt.log.writeln("output: " + output);
 
              // parse out the list of assets to handle, and update the grunt config accordingly
              var assets = lines.map(function (tag) {
 
+                // The asset is the string of the referenced source file
                 var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
-
-                return asset;
+                return temp + asset;
              }).reduce(function (a, b) {
                 b = ( b ? b.split(',') : '');
                 return a.concat(b);
              }, []);
+
 
              grunt.log.subhead('Found a block:')
                 .writeln(grunt.log.wordlist(lines, { separator:'\n' }))

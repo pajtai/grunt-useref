@@ -33,6 +33,8 @@ module.exports = function (grunt) {
             // allow grunt tasks easy access to the project object
             project: project,
 
+            temp: project.dirs.temp,
+
             // Copy things to a temp dir, and only change things in the temp dir
             cp: {
                 temp: {
@@ -56,9 +58,8 @@ module.exports = function (grunt) {
                 html: project.dirs.temp + project.files.any + project.files.dot.html
             },
 
-            min: {
-                live: ''
-            }
+            clean: ['temp']
+
         };
 
     grunt.initConfig(gruntConfig);
@@ -68,5 +69,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('test', 'cp:temp useref revPackage cp:test');
+    grunt.registerTask('test', 'cp:temp useref concat min revPackage cp:test clean');
 };

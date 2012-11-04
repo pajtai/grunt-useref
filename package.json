@@ -19,8 +19,7 @@
         "jasmine-node": "*",
         "grunt": ">= 0.3.8",
         "grunt-cp": ">=0.1.0",
-        "grunt-yui-compressor": ">=0.1.1",
-        "grunt-rev-package": ">=0.0.1"
+        "grunt-contrib-clean": ">=0.3.1"
     },
     "keywords": [
         "gruntplugin"
