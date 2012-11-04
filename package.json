@@ -18,8 +18,7 @@
     "dependencies": {
         "jasmine-node": "*",
         "grunt": ">= 0.3.8",
-        "grunt-cp": ">=0.1.0",
-        "grunt-contrib-clean": ">=0.3.1"
+        "grunt-cp": ">=0.1.0"
     },
     "keywords": [
         "gruntplugin"

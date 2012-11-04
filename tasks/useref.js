@@ -98,7 +98,7 @@ module.exports = function (grunt) {
         var concat = grunt.config('concat') || {},
             min = grunt.config('min') || {},
             css = grunt.config('css') || {},
-            temp = grunt.config('temp');
+            temp = grunt.config('useref.temp');
 
         // make certain to have a traling slash
         if (temp[-1] !== '/') {
@@ -122,9 +122,6 @@ module.exports = function (grunt) {
 
              output = temp + output;
 
-             grunt.log.writeln("type: " + type);
-             grunt.log.writeln("output: " + output);
-
              // parse out the list of assets to handle, and update the grunt config accordingly
              var assets = lines.map(function (tag) {
 
@@ -136,17 +133,10 @@ module.exports = function (grunt) {
                 return a.concat(b);
              }, []);
 
-
-             grunt.log.subhead('Found a block:')
-                .writeln(grunt.log.wordlist(lines, { separator:'\n' }))
-                .writeln('Updating config with the following assets:')
-                .writeln('    - ' + grunt.log.wordlist(assets, { separator:'\n    - ' }));
-
              // update concat config for this block
              concat[output] = assets;
              grunt.config('concat', concat);
 
-             grunt.log.writeln("**** output is: " + JSON.stringify(output));
              // min config, only for js type block
              if (type === 'js') {
                 min[output] = output;
@@ -173,12 +163,17 @@ module.exports = function (grunt) {
 
     grunt.registerMultiTask('useref', 'Replaces references to non-minified scripts / stylesheets', function () {
 
-        // TODO: kick off usemin-handler and add package.json rev
         // Assumption is that we are now in a temp directory, so act accordingly
 
-        var name = this.target,
-            data = this.data,
-            files = grunt.file.expand(data);
+        var name = this.target, data, files;
+
+        // temp target is for data storag and is not actionable
+        if ('temp' === name) {
+            return;
+        }
+
+        data = this.data;
+        files = grunt.file.expand(data);
 
         // After this the file references will be updated
         files.map(grunt.file.read).forEach(function (content, i) {

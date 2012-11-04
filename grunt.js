@@ -33,32 +33,20 @@ module.exports = function (grunt) {
             // allow grunt tasks easy access to the project object
             project: project,
 
-            temp: project.dirs.temp,
-
             // Copy things to a temp dir, and only change things in the temp dir
             cp: {
-                temp: {
-                    src : project.dirs.input,
-                    dest: project.dirs.temp
-                },
-
                 test: {
-                    src : project.dirs.temp,
+                    src : project.dirs.input,
                     dest: project.dirs.output
                 }
             },
 
-            // For revisioning, we want to skip the "vendor" directory
-            revPackage: {
-                temp: project.dirs.temp + project.files.scripts + project.files.thisDir + project.files.dot.javascript
-            },
-
-            // Useref will got through all html files in temp
+            // Useref will got through all html files in output
             useref: {
-                html: project.dirs.temp + project.files.any + project.files.dot.html
-            },
+                html: project.dirs.output + project.files.any + project.files.dot.html,
 
-            clean: ['temp']
+                temp: project.dirs.output
+            }
 
         };
 
@@ -69,5 +57,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('test', 'cp:temp useref concat min revPackage cp:test clean');
+    grunt.registerTask('test', 'cp useref concat min');
 };
