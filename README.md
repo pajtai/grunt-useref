@@ -10,9 +10,9 @@ Utilize build blocks in your html to indicate the files to be concatenated and m
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
 minification of the desired files by dynamically updating the `concat`, `min`, and `css` tasks.
 
-**This tasks modifies files, so it should be executed on a temp directory on final build directory.**
+**This tasks modifies files, so it should be executed on a temp directory or the final build directory.**
 
-**This task relies on the built in concat, min, and css tasks to be run after it... concat first**
+**This task relies on the built in concat, min, and css tasks to be run after it... concat first.**
 
 Inspiration (and large chunks of code) for `grunt-useref` was taken from the `usemin` tasks of
 [H5BP](https://raw.github.com/h5bp/node-build-script/master/tasks/usemin.js) and
@@ -119,3 +119,7 @@ npm test
 
 You can inspect the sample output created. The tests can be run by either cloning the git repo or from this module's
 directory inside the `node_modules` folder of your project.
+
+---
+
+[NPM module](https://npmjs.org/package/grunt-useref)

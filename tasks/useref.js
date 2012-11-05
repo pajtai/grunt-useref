@@ -8,6 +8,7 @@ module.exports = function (grunt) {
 
 
     // TODO: remove helpers
+    // TODO: check that `temp` is defined before proceeding
 
     var fs = require('fs'),
         path = require('path'),
