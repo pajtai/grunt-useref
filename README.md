@@ -78,7 +78,7 @@ grunt.loadNpmTasks('grunt-useref');
 
 ## Tests
 
-Currently there are no formal tests, but the `test` directory does have a working sample setup. To try out the sample
+Currently there are no autmated tests, but the `test` directory does have a working sample setup. To try out the sample
 run it from the `grunt-useref` directory using:
 
 ```bash
@@ -88,7 +88,3 @@ npm test
 
 You can inspect the sample output created. The tests can be run by either cloning the git repo or from this module's
 directory inside the `node_modules` folder of your project.
-
-* TODO:
-    * support quote mark escaping and constants with quote marks in them
-    * support consants other than strings
