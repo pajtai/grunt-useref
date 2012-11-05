@@ -54,8 +54,10 @@ module.exports = function (grunt) {
 
     grunt.initConfig(gruntConfig);
 
+    grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-cp');
     grunt.loadNpmTasks('grunt-rev-package');
+
 
     grunt.loadTasks('./tasks/');
 
