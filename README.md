@@ -44,7 +44,7 @@ the entire config object.
         <script type="text/javascript" src="scripts/that.js"></script>
         <!-- endbuild -->
 
-        <!-- build:js scripts/script1.<%= <%= grunt.template.today('yyyy-mm-dd') %>.min.js -->
+        <!-- build:js scripts/script1.<%= grunt.template.today('yyyy-mm-dd') %>.min.js -->
         <script type="text/javascript" src="scripts/script1.js"></script>
         <!-- endbuild -->
 ```
