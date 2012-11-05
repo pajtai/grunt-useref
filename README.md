@@ -63,7 +63,7 @@ grunt.registerTask('build', 'cp useref concat min css');
 Or, if you are do not have any css build blocks:
 
 ```javascript
-grunt.registerTask('build', 'cp useref concat min css');
+grunt.registerTask('build', 'cp useref concat min');
 ```
 
 ## Installation and Use

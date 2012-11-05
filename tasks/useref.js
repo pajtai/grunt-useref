@@ -6,6 +6,9 @@
 module.exports = function (grunt) {
     'use strict';
 
+
+    // TODO: remove helpers
+
     var fs = require('fs'),
         path = require('path'),
 
@@ -151,7 +154,7 @@ module.exports = function (grunt) {
          });
 
          // log a bit what was added to config
-         grunt.log.subhead('Configuration is now:')
+         grunt.verbose.subhead('Configuration is now:')
          .subhead('  css:')
          .writeln('  ' + JSON.stringify(grunt.config.get('css')))
          .subhead('  concat:')
@@ -247,10 +250,8 @@ module.exports = function (grunt) {
     // replace to the replace helper.
     grunt.registerHelper('useref:post:html', function (content) {
 
-        grunt.log.writeln('Update the HTML to reference our concat/min/revved script files');
         content = grunt.helper('replace', content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
 
-        grunt.log.writeln('Update the HTML with the new css filenames');
         content = grunt.helper('replace', content, /<link[^\>]+href=['"]([^"']+)["']/gm);
 
         return content;
