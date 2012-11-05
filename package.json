@@ -1,24 +1,41 @@
 {
-    "name": "Useref-Sample",
-    "title": "Useref Sample",
-    "description": "Sample project that demonstrates updating references in html, while mini, concat, & revisioning js",
+    "name": "grunt-useref",
+    "title": "Grunt Useref",
+    "description": "Use build blocks to simply update the references in your html and perform file concatenation and minification.",
     "version": "0.0.1",
-    "homepage": "https://github.com/pajtai/useref-sample",
+    "homepage": "https://github.com/pajtai/grunt-useref",
     "author": {
-        "name": "Peter Ajtai",
-        "url": "https://github.com/pajtai"
+        "name": "Peter Ajtai (https://netlumination.com)"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/pajtai/useref-sample.git"
+        "url": "https://github.com/pajtai/grunt-useref.git"
     },
     "bugs": {
-        "url": "https://github.com/pajtai/useref-sample/issues"
+        "url": "https://github.com/pajtai/grunt-useref/issues"
     },
-    "dependencies": {
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/pajtai/grunt-useref/blob/master/MIT-LICENSE.txt"
+        }
+    ],
+    "main": "grunt.js",
+    "engines": {
+        "node": "*"
+    },
+    "dependencies": {},
+    "devDependencies": {
         "jasmine-node": "*",
         "grunt": ">= 0.3.8",
-        "grunt-cp": ">=0.1.0"
+        "grunt-cp": ">=0.1.0",
+        "grunt-bump": ">=0.0.1"
+    },
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "grunt test"
     },
     "keywords": [
         "gruntplugin"

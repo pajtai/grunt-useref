@@ -86,7 +86,7 @@ module.exports = function (grunt) {
                 type = parts[0],
                 target = parts[1];
 
-            content = grunt.helper('usemin', content, block, target, type);
+            content = grunt.helper('useref', content, block, target, type);
         });
 
         return content;
@@ -112,7 +112,7 @@ module.exports = function (grunt) {
              var lines = blocks[dest].slice(1, -1),
                  parts = dest.split(':'),
                  type = parts[0],
-                 // output is the usemin block file
+                 // output is the useref block file
                  output = parts[1];
 
              // Handle absolute path (i.e. with respect to th eserver root)
@@ -179,7 +179,7 @@ module.exports = function (grunt) {
         files.map(grunt.file.read).forEach(function (content, i) {
             var theFile = files[i];
 
-            grunt.log.subhead('usemin:' + name + ' - ' + theFile);
+            grunt.log.subhead('useref:' + name + ' - ' + theFile);
 
             // make sure to convert back into utf8, `file.read` when used as a
             // forEach handler will take additional arguments, and thus trigger the
@@ -188,13 +188,13 @@ module.exports = function (grunt) {
 
             // ext-specific directives handling and replacement of blocks
             // First check if the helper exists
-            if (!!grunt.task._helpers['usemin:pre:' + name]) {
-                content = grunt.helper('usemin:pre:' + name, content);
+            if (!!grunt.task._helpers['useref:pre:' + name]) {
+                content = grunt.helper('useref:pre:' + name, content);
             }
 
             // actual replacement of revved assets
-            if (!!grunt.task._helpers['usemin:post:' + name]) {
-                content = grunt.helper('usemin:post:' + name, content);
+            if (!!grunt.task._helpers['useref:post:' + name]) {
+                content = grunt.helper('useref:post:' + name, content);
             }
 
             // write the new content to disk
@@ -206,9 +206,9 @@ module.exports = function (grunt) {
     // Helpers
     // -------
 
-    // usemin:pre:* are used to preprocess files with the blocks and directives
+    // useref:pre:* are used to preprocess files with the blocks and directives
     // before going through the global replace
-    grunt.registerHelper('usemin:pre:html', function (content) {
+    grunt.registerHelper('useref:pre:html', function (content) {
 
         // XXX extension-specific for get blocks too.
         //
@@ -225,27 +225,27 @@ module.exports = function (grunt) {
 
 
 
-    // usemin and usemin:* are used with the blocks parsed from directives
-    grunt.registerHelper('usemin', function (content, block, target, type) {
+    // useref and useref:* are used with the blocks parsed from directives
+    grunt.registerHelper('useref', function (content, block, target, type) {
         target = target || 'replace';
-        return grunt.helper('usemin:' + type, content, block, target);
+        return grunt.helper('useref:' + type, content, block, target);
     });
 
-    grunt.registerHelper('usemin:css', function (content, block, target) {
+    grunt.registerHelper('useref:css', function (content, block, target) {
         var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
         var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
         return content.replace(block, indent + '<link rel="stylesheet" href="' + target + '"\/>');
     });
 
-    grunt.registerHelper('usemin:js', function (content, block, target) {
+    grunt.registerHelper('useref:js', function (content, block, target) {
         var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
         var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
         return content.replace(block, indent + '<script src="' + target + '"></script>');
     });
 
-    // usemin:post:* are the global replace handlers, they delegate the regexp
+    // useref:post:* are the global replace handlers, they delegate the regexp
     // replace to the replace helper.
-    grunt.registerHelper('usemin:post:html', function (content) {
+    grunt.registerHelper('useref:post:html', function (content) {
 
         grunt.log.writeln('Update the HTML to reference our concat/min/revved script files');
         content = grunt.helper('replace', content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
