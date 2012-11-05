@@ -8,7 +8,7 @@ block file names are run through the grunt templating engine.
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
-minification of the desired files by modifying the `concat`, `min`, and `css` tasks.
+minification of the desired files by dynamically updating the `concat`, `min`, and `css` tasks.
 
 **This tasks modifies files, so it should be executed on a temp directory on final build directory.**
 
@@ -20,10 +20,11 @@ Inspiration (and large chunks of code) for `grunt-useref` was taken from the `us
 
 ## Usage
 
-To look at a working example see the `grunt.js` of this module and look at `test/input` of this module. See the testing
-section to see how to run these.
+To look at a working example see the `grunt.js` of this module and look at `test/input` of this module.
 
 Example usage with grunt.init:
+
+**in `grunt.js`:**
 
 ```javascript
     useref: {
@@ -34,19 +35,21 @@ Example usage with grunt.init:
     }
 ```
 
-Corresponding example build blocks in the referenced html files. Multiple build blocks may be used in a single file.
-The grunt templating engine can be used in the build file descriptions. The data passed to the template processing is
-the entire config object.
+Below are example corresponding example build blocks in an example referenced html file. Multiple build blocks may be
+used in a single file. The grunt templating engine can be used in the build file descriptions. The data passed to the
+template processing is the entire config object.
+
+**in an html file within the `output` directory**
 
 ```html
-        <!-- build:js scripts/combined.<%= pkg.version %>.concat.min.js -->
-        <script type="text/javascript" src="scripts/this.js"></script>
-        <script type="text/javascript" src="scripts/that.js"></script>
-        <!-- endbuild -->
+<!-- build:js scripts/combined.<%= pkg.version %>.concat.min.js -->
+<script type="text/javascript" src="scripts/this.js"></script>
+<script type="text/javascript" src="scripts/that.js"></script>
+<!-- endbuild -->
 
-        <!-- build:js scripts/script1.<%= grunt.template.today('yyyy-mm-dd') %>.min.js -->
-        <script type="text/javascript" src="scripts/script1.js"></script>
-        <!-- endbuild -->
+<!-- build:js scripts/script1.<%= grunt.template.today('yyyy-mm-dd') %>.min.js -->
+<script type="text/javascript" src="scripts/script1.js"></script>
+<!-- endbuild -->
 ```
 
 The example above has two build blocks on the same page. The first block concats and minifies. The second block minifies
@@ -57,6 +60,25 @@ The above example assumes that your initConfig contains:
 
 ```javascript
     pkg: '<json:package.json>'
+```
+
+Assuming your `package.json.version` is `0.1.0` and it is October 31, 2012 running `grunt useref` would create the
+following two files:
+
+```bash
+# concat and minified this.js + that.js
+output/scripts/combined.0.1.0.concat.min.js
+
+# minified script1.js
+output/scripts/script1.2012-10-31.min.js
+```
+
+Also the html in the file with the build blocks would be updated to:
+
+```html
+<script type="text/javascript" src="scripts/combined.0.1.0.concat.min.js"></script>
+
+<script type="text/javascript" src="scripts/script1.2012-10-31.min.js"></script>
 ```
 
 Finally, make sure to schedule `concat`, `min` and `css` in your `grunt.js`. You must schedule these after `useref`.
