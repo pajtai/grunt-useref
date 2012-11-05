@@ -3,7 +3,8 @@ grunt-useref
 
 ## Description
 
-Use build blocks to simply update the references in your html and perform file concatenation and minification.
+Use build blocks to simply update the references in your html and perform file concatenation and minification. The build
+block file names are run through the grunt templating engine.
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
@@ -33,15 +34,17 @@ Example usage with grunt.init:
     }
 ```
 
-Corresponding example build blocks in the referenced html files. Multiple build blocks may be used in a single file
+Corresponding example build blocks in the referenced html files. Multiple build blocks may be used in a single file.
+The grunt templating engine can be used in the build file descriptions. The data passed to the template processing is
+the entire config object.
 
 ```html
-        <!-- build:js scripts/combined.concat.min.js -->
+        <!-- build:js scripts/combined.<%= pkg.version %>.concat.min.js -->
         <script type="text/javascript" src="scripts/this.js"></script>
         <script type="text/javascript" src="scripts/that.js"></script>
         <!-- endbuild -->
 
-        <!-- build:js scripts/script1.min.js -->
+        <!-- build:js scripts/script1.<%= <%= grunt.template.today('yyyy-mm-dd') %>.min.js -->
         <script type="text/javascript" src="scripts/script1.js"></script>
         <!-- endbuild -->
 ```
@@ -49,6 +52,12 @@ Corresponding example build blocks in the referenced html files. Multiple build 
 The example above has two build blocks on the same page. The first block concats and minifies. The second block minifies
 one file. They both put the new scripts into a newly named file. The original JavaScript files remain untouched in this
 case.
+
+The above example assumes that your initConfig contains:
+
+```javascript
+    pkg: '<json:package.json>'
+```
 
 Finally, make sure to schedule `concat`, `min` and `css` in your `grunt.js`. You must schedule these after `useref`.
 You do not need to create `grunt.init` entries for them. If the build blocks do not create work for any one of these

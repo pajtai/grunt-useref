@@ -58,7 +58,8 @@ module.exports = function (grunt) {
 
             if (build) {
                 block = true;
-                sections[[build[1], build[2].trim()].join(':')] = last = [];
+                // Run the build block file through the template engine
+                sections[[build[1], grunt.template.process(build[2].trim())].join(':')] = last = [];
             }
 
             // switch back block flag when endbuild
@@ -231,6 +232,7 @@ module.exports = function (grunt) {
     // useref and useref:* are used with the blocks parsed from directives
     grunt.registerHelper('useref', function (content, block, target, type) {
         target = target || 'replace';
+
         return grunt.helper('useref:' + type, content, block, target);
     });
 
@@ -248,6 +250,7 @@ module.exports = function (grunt) {
 
     // useref:post:* are the global replace handlers, they delegate the regexp
     // replace to the replace helper.
+    // TODO: this can be removed
     grunt.registerHelper('useref:post:html', function (content) {
 
         content = grunt.helper('replace', content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
@@ -262,6 +265,7 @@ module.exports = function (grunt) {
     // regexp should capture the assets relative filepath, it is then compared to
     // the list of files on the filesystem to guess the actual revision of a file
     //
+    // TODO: may not be needed in full
     grunt.registerHelper('replace', function (content, regexp) {
 
         return content.replace(regexp, function (match, src) {

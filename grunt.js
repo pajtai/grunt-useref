@@ -33,6 +33,8 @@ module.exports = function (grunt) {
             // allow grunt tasks easy access to the project object
             project: project,
 
+            pkg: '<json:package.json>',
+
             // Copy things to a temp dir, and only change things in the temp dir
             cp: {
                 test: {
