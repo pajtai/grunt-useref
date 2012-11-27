@@ -102,7 +102,7 @@ module.exports = function (grunt) {
         // concat / min / css / rjs config
         var concat = grunt.config('concat') || {},
             min = grunt.config('min') || {},
-            css = grunt.config('css') || {},
+            css = grunt.config('cssmin') || {},
             temp = grunt.config('useref.temp');
 
         // make certain to have a traling slash
@@ -132,6 +132,10 @@ module.exports = function (grunt) {
 
                 // The asset is the string of the referenced source file
                 var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
+                 // remove leading slashing, since we know we have a trailing slash in temp
+                 if (asset[0] === '/') {
+                     asset = asset.substr(1);
+                 }
                 return temp + asset;
              }).reduce(function (a, b) {
                 b = ( b ? b.split(',') : '');
@@ -151,14 +155,14 @@ module.exports = function (grunt) {
              // css config, only for css type block
              if (type === 'css') {
                 css[output] = output;
-                grunt.config('css', css);
+                grunt.config('cssmin', css);
              }
          });
 
          // log a bit what was added to config
          grunt.verbose.subhead('Configuration is now:')
-         .subhead('  css:')
-         .writeln('  ' + JSON.stringify(grunt.config.get('css')))
+         .subhead('  cssmin:')
+         .writeln('  ' + JSON.stringify(grunt.config.get('cssmin')))
          .subhead('  concat:')
          .writeln('  ' + JSON.stringify(grunt.config.get('concat')))
          .subhead('  min:')

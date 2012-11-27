@@ -56,10 +56,10 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-cp');
-    grunt.loadNpmTasks('grunt-rev-package');
+    grunt.loadNpmTasks('grunt-css');
 
 
     grunt.loadTasks('./tasks/');
 
-    grunt.registerTask('test', 'cp useref concat min');
+    grunt.registerTask('test', 'cp useref concat min cssmin');
 };

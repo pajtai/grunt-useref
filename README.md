@@ -8,11 +8,11 @@ block file names are run through the grunt templating engine.
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
-minification of the desired files by dynamically updating the `concat`, `min`, and `css` tasks.
+minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `css`) tasks.
 
 **This tasks modifies files, so it should be executed on a temp directory or the final build directory.**
 
-**This task relies on the built in concat, min, and css tasks to be run after it... concat first.**
+**This task relies on the built in concat, min, and cssmin tasks to be run after it... concat first.**
 
 Inspiration (and large chunks of code) for `grunt-useref` was taken from the `usemin` tasks of
 [H5BP](https://raw.github.com/h5bp/node-build-script/master/tasks/usemin.js) and
@@ -35,13 +35,18 @@ Example usage with grunt.init:
     }
 ```
 
-Below are example corresponding example build blocks in an example referenced html file. Multiple build blocks may be
+Below are example corresponding build blocks in an example referenced html file. Multiple build blocks may be
 used in a single file. The grunt templating engine can be used in the build file descriptions. The data passed to the
 template processing is the entire config object.
 
 **in an html file within the `output` directory**
 
 ```html
+<!-- build:css /css/combined.css -->
+<link href="/css/one.css" rel="stylesheet">
+<link href="/css/two.css" rel="stylesheet">
+<!-- endbuild -->
+
 <!-- build:js scripts/combined.<%= pkg.version %>.concat.min.js -->
 <script type="text/javascript" src="scripts/this.js"></script>
 <script type="text/javascript" src="scripts/that.js"></script>
@@ -63,9 +68,12 @@ The above example assumes that your initConfig contains:
 ```
 
 Assuming your `package.json.version` is `0.1.0` and it is October 31, 2012 running `grunt useref` would create the
-following two files:
+following three files:
 
 ```bash
+# concat and minified one.css + two.css
+output/css/combined.css
+
 # concat and minified this.js + that.js
 output/scripts/combined.0.1.0.concat.min.js
 
@@ -76,19 +84,21 @@ output/scripts/script1.2012-10-31.min.js
 Also the html in the file with the build blocks would be updated to:
 
 ```html
+<link href="/css/combined.css" rel="stylesheet">
+
 <script type="text/javascript" src="scripts/combined.0.1.0.concat.min.js"></script>
 
 <script type="text/javascript" src="scripts/script1.2012-10-31.min.js"></script>
 ```
 
-Finally, make sure to schedule `concat`, `min` and `css` in your `grunt.js`. You must schedule these after `useref`.
+Finally, make sure to schedule `concat`, `min` and `cssmin` in your `grunt.js`. You must schedule these after `useref`.
 You do not need to create `grunt.init` entries for them. If the build blocks do not create work for any one of these
 tasks, you can leave that one out.
 
 For example:
 
 ```javascript
-grunt.registerTask('build', 'cp useref concat min css');
+grunt.registerTask('build', 'cp useref concat min cssmin');
 ```
 
 Or, if you are do not have any css build blocks:
@@ -119,6 +129,10 @@ npm test
 
 You can inspect the sample output created. The tests can be run by either cloning the git repo or from this module's
 directory inside the `node_modules` folder of your project.
+
+## Change Log
+
+* Nov 26, 2012 - updated css minification task and its dependency
 
 ---
 
