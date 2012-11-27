@@ -6,6 +6,7 @@
 module.exports = function (grunt) {
     'use strict';
 
+    grunt.loadNpmTasks("grunt-css");
 
     // TODO: remove helpers
     // TODO: check that `temp` is defined before proceeding

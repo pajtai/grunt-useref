@@ -45,9 +45,11 @@ module.exports = function (grunt) {
 
             // Useref will got through all html files in output
             useref: {
-                html: project.dirs.output + project.files.any + project.files.dot.html,
 
-                temp: project.dirs.output
+                    html: project.dirs.output + project.files.any + project.files.dot.html,
+
+                    temp: project.dirs.output
+
             }
 
         };
@@ -56,8 +58,6 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-cp');
-    grunt.loadNpmTasks('grunt-css');
-
 
     grunt.loadTasks('./tasks/');
 
