@@ -132,7 +132,7 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
-* Nov 26, 2012 - updated css minification task and its dependency
+* 0.0.6 - Nov 26, 2012 - updated css minification task and its dependency
 
 ---
 
