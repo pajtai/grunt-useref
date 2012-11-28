@@ -8,7 +8,8 @@ block file names are run through the grunt templating engine.
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
-minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `css`) tasks.
+minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `grunt-css` - this
+auto included as a dependency for `grunt-useref`) tasks.
 
 **This tasks modifies files, so it should be executed on a temp directory or the final build directory.**
 
@@ -132,6 +133,7 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
+* 0.0.7 - Nov 27, 2012 - fixed the css minification task so it does not have to be included in your grunt.js as a dependency
 * 0.0.6 - Nov 26, 2012 - updated css minification task and its dependency
 
 ---
