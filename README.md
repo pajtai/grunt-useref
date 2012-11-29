@@ -5,7 +5,7 @@ grunt-useref
 
 Use build blocks to do three things:
 
-1. update the references in your html from orginals to a versioned, optimized file
+1. update the references in your html from orginals to an optionally versioned, optimized file
 2. perform file concatenation 
 3. Perform file minification.
 
