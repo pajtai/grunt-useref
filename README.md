@@ -24,7 +24,7 @@ Inspiration (and large chunks of code) for `grunt-useref` was taken from the `us
 
 ## Usage
 
-To look at a working example see the `grunt.js` of this module and look at `test/input` of this module.
+To look at a working example see the [`grunt.js`](https://github.com/pajtai/grunt-useref/blob/master/grunt.js) of this module and look at `test/input` of this module.
 
 Example usage with grunt.init:
 
