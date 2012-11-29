@@ -3,17 +3,20 @@ grunt-useref
 
 ## Description
 
-Use build blocks to simply update the references in your html and perform file concatenation and minification. The build
-block file names are run through the grunt templating engine.
+Use build blocks to do three things:
+
+1. update the references in your html from orginals to a versioned, optimized file
+2. perform file concatenation 
+3. Perform file minification.
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
-minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `grunt-css` - this
+minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `grunt-css` - this is
 auto included as a dependency for `grunt-useref`) tasks.
 
 **This tasks modifies files, so it should be executed on a temp directory or the final build directory.**
 
-**This task relies on the built in concat, min, and cssmin tasks to be run after it... concat first.**
+**This task relies on the concat, min, and cssmin tasks to be run after it... concat first.**
 
 Inspiration (and large chunks of code) for `grunt-useref` was taken from the `usemin` tasks of
 [H5BP](https://raw.github.com/h5bp/node-build-script/master/tasks/usemin.js) and
@@ -58,7 +61,7 @@ template processing is the entire config object.
 <!-- endbuild -->
 ```
 
-The example above has two build blocks on the same page. The first block concats and minifies. The second block minifies
+The example above has three build blocks on the same page. The first block concats and minifies. The second block minifies
 one file. They both put the new scripts into a newly named file. The original JavaScript files remain untouched in this
 case.
 
