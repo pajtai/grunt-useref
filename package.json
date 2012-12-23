@@ -23,7 +23,7 @@
     "node": "*"
   },
   "dependencies": {
-    "grunt-css": ">=0.3.2"
+    "grunt-css": "=0.3.2"
   },
   "devDependencies": {
     "jasmine-node": "*",
