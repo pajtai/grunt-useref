@@ -136,7 +136,7 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
-* 0.0.8 - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
+* 0.0.9 - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
 * 0.0.7 - Nov 27, 2012 - fixed the css minification task so it does not have to be included in your grunt.js as a dependency
 * 0.0.6 - Nov 26, 2012 - updated css minification task and its dependency
 
