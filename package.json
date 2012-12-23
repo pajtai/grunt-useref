@@ -26,10 +26,10 @@
     "grunt-css": "0.3.2"
   },
   "devDependencies": {
-    "jasmine-node": "*",
-    "grunt": ">= 0.3.8",
-    "grunt-cp": ">=0.1.0",
-    "grunt-bump": ">=0.0.1"
+    "jasmine-node": "1.0.28",
+    "grunt": "0.3.8",
+    "grunt-cp": "0.1.0",
+    "grunt-bump": "0.0.1"
   },
   "directories": {
     "test": "test"
