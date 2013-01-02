@@ -51,7 +51,8 @@ template processing is the entire config object.
 <link href="/css/two.css" rel="stylesheet">
 <!-- endbuild -->
 
-<!-- build:js scripts/combined.<%= pkg.version %>.concat.min.js -->
+<!-- build:js scripts/combined.<%= grunt.file.readJSON('package.json').version %>.concat.min.js -->
+<!-- You can put comments in here too -->
 <script type="text/javascript" src="scripts/this.js"></script>
 <script type="text/javascript" src="scripts/that.js"></script>
 <!-- endbuild -->
@@ -61,18 +62,17 @@ template processing is the entire config object.
 <!-- endbuild -->
 ```
 
-The example above has three build blocks on the same page. The first block concats and minifies. The second block minifies
-one file. They both put the new scripts into a newly named file. The original JavaScript files remain untouched in this
-case.
+The example above has three build blocks on the same page. The first two block concats and minifies. The third block
+minifies one file. They all put the new scripts into a newly named file. The original JavaScript files remain untouched
+in this case due to the naming of the output files.
 
-The above example assumes that your initConfig contains:
+Using `<%= grunt.file.readJSON('package.json').version %>` is more robust than using `pkg.version` where,
+`pkg: '<json:package.json>'`, since if you do a version "bump" as part of your build script, you will get an off by one
+if you use `pkg.version`. This is because `pkg.version` is stored immediately when `grunt.init` is run, and this would
+be run before your `bump` task.
 
-```javascript
-    pkg: '<json:package.json>'
-```
-
-Assuming your `package.json.version` is `0.1.0` and it is October 31, 2012 running `grunt useref` would create the
-following three files:
+Assuming your `package.json.version` is `0.1.0` after the bump, and it is October 31, 2012 running `grunt useref` would
+create the following three files:
 
 ```bash
 # concat and minified one.css + two.css
@@ -136,9 +136,10 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
-* 0.0.9 - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
-* 0.0.7 - Nov 27, 2012 - fixed the css minification task so it does not have to be included in your grunt.js as a dependency
-* 0.0.6 - Nov 26, 2012 - updated css minification task and its dependency
+* 0.0.10 - Jan 02, 2012 - Allow empty lines and comment within build blocks
+* 0.0.9  - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
+* 0.0.7  - Nov 27, 2012 - fixed the css minification task so it does not have to be included in your grunt.js as a dependency
+* 0.0.6  - Nov 26, 2012 - updated css minification task and its dependency
 
 ---
 

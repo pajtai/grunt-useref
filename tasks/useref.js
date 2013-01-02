@@ -133,11 +133,16 @@ module.exports = function (grunt) {
 
                 // The asset is the string of the referenced source file
                 var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
-                 // remove leading slashing, since we know we have a trailing slash in temp
-                 if (asset[0] === '/') {
-                     asset = asset.substr(1);
+
+                 // Allow white space and comment in build blocks by checking if this line has an asset or not
+                 if (asset) {
+                     grunt.log.subhead("asset is: " + asset);
+                     // remove leading slashing, since we know we have a trailing slash in temp
+                     if (asset[0] === '/') {
+                         asset = asset.substr(1);
+                     }
+                     return temp + asset;
                  }
-                return temp + asset;
              }).reduce(function (a, b) {
                 b = ( b ? b.split(',') : '');
                 return a.concat(b);
