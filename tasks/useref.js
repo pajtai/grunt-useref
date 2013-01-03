@@ -128,15 +128,16 @@ module.exports = function (grunt) {
 
              output = temp + output;
 
+             grunt.log.subhead("assets are: ");
              // parse out the list of assets to handle, and update the grunt config accordingly
              var assets = lines.map(function (tag) {
 
-                // The asset is the string of the referenced source file
-                var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
+                 // The asset is the string of the referenced source file
+                 var asset = (tag.match(/(href|src)=["']([^'"]+)["']/) || [])[2];
 
                  // Allow white space and comment in build blocks by checking if this line has an asset or not
                  if (asset) {
-                     grunt.log.subhead("asset is: " + asset);
+                     grunt.log.writeln(asset);
                      // remove leading slashing, since we know we have a trailing slash in temp
                      if (asset[0] === '/') {
                          asset = asset.substr(1);
@@ -144,10 +145,11 @@ module.exports = function (grunt) {
                      return temp + asset;
                  }
              }).reduce(function (a, b) {
-                b = ( b ? b.split(',') : '');
-                return a.concat(b);
-             }, []);
+                     b = ( b ? b.split(',') : '');
+                     return a.concat(b);
+                 }, []);
 
+             grunt.log.writeln("\n");
              // update concat config for this block
              concat[output] = assets;
              grunt.config('concat', concat);
