@@ -1,9 +1,20 @@
 grunt-useref
 ============
 
+```
++---------------------------------------------+
+|                                             |
+| Current version is Grunt 0.4.0 compatible.  |
+| Version 0.0.12+ is Grunt 0.4.0 compatible.  |
+|                                             |
+| Version 0.0.11 is Grunt 0.3.17 compatible.  |
+|                                             |
++---------------------------------------------+
+```
+
 ## Description
 
-Use single build blocks to do three things:
+Use build blocks to do three things:
 
 1. update the references in your html from orginals to an optionally versioned, optimized file
 2. perform file concatenation 
@@ -11,12 +22,12 @@ Use single build blocks to do three things:
 
 Utilize build blocks in your html to indicate the files to be concatenated and minified. This task will parse the build
 blocks by updating the `<script>` and `<style>` blocks in your html, and it will schedule the concatenation and
-minification of the desired files by dynamically updating the `concat`, `min`, and `cssmin` (part of `grunt-css` - this is
+minification of the desired files by dynamically updating the `concat`, `uglify`, and `cssmin` (part of `grunt-css` - this is
 auto included as a dependency for `grunt-useref`) tasks.
 
-**This tasks modifies files, so it should be executed on a temp directory or the final build directory.**
+**This task modifies files, so it should be executed on a temp directory or the final build directory.**
 
-**This task relies on the concat, min, and cssmin tasks to be run after it... concat first.**
+**This task relies on the concat, uglify, and cssmin tasks to be run after it... concat first.**
 
 Inspiration (and large chunks of code) for `grunt-useref` was taken from the `usemin` tasks of
 [H5BP](https://raw.github.com/h5bp/node-build-script/master/tasks/usemin.js) and
@@ -35,6 +46,7 @@ Example usage with grunt.init:
         // specify which files contain the build blocks
         html: 'output/**/*.html',
         // explicitly specify the temp directory you are working in
+        // this is the the base of your links ( "/" )
         temp: 'output'
     }
 ```
@@ -62,14 +74,9 @@ template processing is the entire config object.
 <!-- endbuild -->
 ```
 
-The example above has three build blocks on the same page. The first two block concats and minifies. The third block
+The example above has three build blocks on the same page. The first two blocks concat and minify. The third block
 minifies one file. They all put the new scripts into a newly named file. The original JavaScript files remain untouched
 in this case due to the naming of the output files.
-
-Using `<%= grunt.file.readJSON('package.json').version %>` is more robust than using `pkg.version` where,
-`pkg: '<json:package.json>'`, since if you do a version "bump" as part of your build script, you will get an off by one
-if you use `pkg.version`. This is because `pkg.version` is stored immediately when `grunt.init` is run, and this would
-be run before your `bump` task.
 
 Assuming your `package.json.version` is `0.1.0` after the bump, and it is October 31, 2012 running `grunt useref` would
 create the following three files:
@@ -95,20 +102,20 @@ Also the html in the file with the build blocks would be updated to:
 <script type="text/javascript" src="scripts/script1.2012-10-31.min.js"></script>
 ```
 
-Finally, make sure to schedule `concat`, `min` and `cssmin` in your `grunt.js`. You must schedule these after `useref`.
+Finally, make sure to schedule `concat`, `uglify` and `cssmin` in your `grunt.js`. You must schedule these after `useref`.
 You do not need to create `grunt.init` entries for them. If the build blocks do not create work for any one of these
 tasks, you can leave that one out.
 
 For example:
 
 ```javascript
-grunt.registerTask('build', 'cp useref concat min cssmin');
+grunt.registerTask('build', ['cp', 'useref', 'concat', 'uglify', 'cssmin');
 ```
 
 Or, if you are do not have any css build blocks:
 
 ```javascript
-grunt.registerTask('build', 'cp useref concat min');
+grunt.registerTask('build', ['cp', 'useref', 'concat', 'uglify');
 ```
 
 ## Installation and Use
@@ -120,6 +127,7 @@ Then load the grunt task in your `grunt.js`
 ```javascript
 grunt.loadNpmTasks('grunt-useref');
 ```
+
 
 ## Tests
 
@@ -136,6 +144,7 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
+* 0.0.12 - Feb 23, 2013 - Adding grunt 0.4.0 compatibility
 * 0.0.11 - Jan 03, 2013 - Making grunt log output a little less obnoxious.
 * 0.0.10 - Jan 02, 2013 - Allow empty lines and comment within build blocks
 * 0.0.9  - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4

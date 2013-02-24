@@ -6,9 +6,10 @@
 module.exports = function (grunt) {
     'use strict';
 
-    grunt.loadNpmTasks("grunt-useref/node_modules/grunt-css");
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-css');
 
-    // TODO: remove helpers
     // TODO: check that `temp` is defined before proceeding
 
     var fs = require('fs'),
@@ -92,7 +93,7 @@ module.exports = function (grunt) {
                 type = parts[0],
                 target = parts[1];
 
-            content = grunt.helper('useref', content, block, target, type);
+            content = helpers.useref(content, block, target, type);
         });
 
         return content;
@@ -100,9 +101,9 @@ module.exports = function (grunt) {
 
     function compactContent(blocks) {
 
-        // concat / min / css / rjs config
+        // concat / uglify / css / rjs config
         var concat = grunt.config('concat') || {},
-            min = grunt.config('min') || {},
+            uglify = grunt.config('uglify') || {},
             css = grunt.config('cssmin') || {},
             temp = grunt.config('useref.temp');
 
@@ -154,10 +155,10 @@ module.exports = function (grunt) {
              concat[output] = assets;
              grunt.config('concat', concat);
 
-             // min config, only for js type block
+             // uglify config, only for js type block
              if (type === 'js') {
-                min[output] = output;
-                grunt.config('min', min);
+                uglify[output] = output;
+                grunt.config('uglify', uglify);
              }
 
              // css config, only for css type block
@@ -173,8 +174,8 @@ module.exports = function (grunt) {
          .writeln('  ' + JSON.stringify(grunt.config.get('cssmin')))
          .subhead('  concat:')
          .writeln('  ' + JSON.stringify(grunt.config.get('concat')))
-         .subhead('  min:')
-         .writeln('  ' + JSON.stringify(grunt.config.get('min')));
+         .subhead('  uglify:')
+         .writeln('  ' + JSON.stringify(grunt.config.get('uglify')));
 
     }
 
@@ -183,6 +184,8 @@ module.exports = function (grunt) {
         // Assumption is that we are now in a temp directory, so act accordingly
 
         var name = this.target, data, files;
+
+        grunt.log.subhead("beginning useref " + name);
 
         // temp target is for data storag and is not actionable
         if ('temp' === name) {
@@ -196,7 +199,7 @@ module.exports = function (grunt) {
         files.map(grunt.file.read).forEach(function (content, i) {
             var theFile = files[i];
 
-            grunt.log.subhead('useref:' + name + ' - ' + theFile);
+            grunt.log.subhead('useref_' + name + ' - ' + theFile);
 
             // make sure to convert back into utf8, `file.read` when used as a
             // forEach handler will take additional arguments, and thus trigger the
@@ -205,125 +208,122 @@ module.exports = function (grunt) {
 
             // ext-specific directives handling and replacement of blocks
             // First check if the helper exists
-            if (!!grunt.task._helpers['useref:pre:' + name]) {
-                content = grunt.helper('useref:pre:' + name, content);
-            }
+            content = helpers['useref_pre_' + name](content);
 
             // actual replacement of revved assets
-            if (!!grunt.task._helpers['useref:post:' + name]) {
-                content = grunt.helper('useref:post:' + name, content);
-            }
+            content = helpers['useref_post_' + name](content);
 
             // write the new content to disk
             grunt.file.write(theFile, content);
         });
 
+        grunt.log.subhead("ending useref " + name);
     });
 
     // Helpers
     // -------
+    var helpers = {
+        // useref:pre:* are used to preprocess files with the blocks and directives
+        // before going through the global replace
+        useref_pre_html : function (content) {
 
-    // useref:pre:* are used to preprocess files with the blocks and directives
-    // before going through the global replace
-    grunt.registerHelper('useref:pre:html', function (content) {
+            // XXX extension-specific for get blocks too.
+            //
+            // Eg. for each predefined extensions directives may vary. eg <!--
+            // directive --> for html, /** directive **/ for css
+            var blocks = getBlocks(content);
 
-        // XXX extension-specific for get blocks too.
+            content = updateReferences(blocks, content);
+
+            compactContent(blocks);
+
+            return content;
+        },
+
+        // useref and useref:* are used with the blocks parsed from directives
+        useref : function (content, block, target, type) {
+            target = target || 'replace';
+
+            return helpers['useref_' + type](content, block, target);
+        },
+
+        useref_css : function (content, block, target) {
+            var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
+            var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
+            return content.replace(block, indent + '<link rel="stylesheet" href="' + target + '"\/>');
+        },
+
+        useref_js : function (content, block, target) {
+            var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
+            var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
+            return content.replace(block, indent + '<script src="' + target + '"></script>');
+        },
+
+        // useref:post:* are the global replace handlers, they delegate the regexp
+        // replace to the replace helper.
+        // TODO: this can be removed
+        useref_post_html : function (content) {
+
+            content = helpers.replaceCustom(content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
+
+            content = helpers.replaceCustom(content, /<link[^\>]+href=['"]([^"']+)["']/gm);
+
+            return content;
+        },
+
         //
-        // Eg. for each predefined extensions directives may vary. eg <!--
-        // directive --> for html, /** directive **/ for css
-        var blocks = getBlocks(content);
+        // global replace handler, takes a file content a regexp to macth with. The
+        // regexp should capture the assets relative filepath, it is then compared to
+        // the list of files on the filesystem to guess the actual revision of a file
+        //
+        // TODO: may not be needed in full
+        replaceCustom : function (content, regexp) {
 
-        content = updateReferences(blocks, content);
+            return content.replace(regexp, function (match, src) {
+                var basename, dirname, filepaths, filepath, filename, res;
 
-        compactContent(blocks);
+                //do not touch external files or the root
+                if (src.match(/\/\//) || src.match(/^\/$/)) {
+                    return match;
+                }
 
-    return content;
-    });
+                // Consider reference from site root
+                if (src.match(/^\//)) {
+                    src = src.substr(1);
+                }
 
+                basename = path.basename(src);
+                dirname = path.dirname(src);
 
+                // XXX files won't change, the filepath should filter the original list
+                // of cached files (we need to treat the filename collision -- i.e. 2 files with same names
+                // in different subdirectories)
+                filepaths = grunt.file.expand(path.join('**/*') + basename);
+                filepath = filepaths.filter(function (f) {
+                    return dirname === path.dirname(f);
+                })[0];
 
-    // useref and useref:* are used with the blocks parsed from directives
-    grunt.registerHelper('useref', function (content, block, target, type) {
-        target = target || 'replace';
+                // not a file in temp, skip it
+                if (!filepath) {
+                    return match;
+                }
 
-        return grunt.helper('useref:' + type, content, block, target);
-    });
+                filename = path.basename(filepath);
+                // handle the relative prefix (with always unix like path even on win32)
+                filename = [dirname, filename].join('/');
 
-    grunt.registerHelper('useref:css', function (content, block, target) {
-        var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
-        var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
-        return content.replace(block, indent + '<link rel="stylesheet" href="' + target + '"\/>');
-    });
+                // if file not exists probaly was concatenated into another file so skip it
+                if (!filename) {
+                    return '';
+                }
 
-    grunt.registerHelper('useref:js', function (content, block, target) {
-        var linefeed = /\r\n/g.test(content) ? '\r\n' : '\n';
-        var indent = (block.split(linefeed)[0].match(/^\s*/) || [])[0];
-        return content.replace(block, indent + '<script src="' + target + '"></script>');
-    });
+                res = match.replace(src, filename);
+                // output some verbose info on what get replaced
+                grunt.log.ok(src).writeln('was ' + match).writeln('now ' + res);
 
-    // useref:post:* are the global replace handlers, they delegate the regexp
-    // replace to the replace helper.
-    // TODO: this can be removed
-    grunt.registerHelper('useref:post:html', function (content) {
-
-        content = grunt.helper('replace', content, /<script.+src=['"](.+)["'][\/>]?><[\\]?\/script>/gm);
-
-        content = grunt.helper('replace', content, /<link[^\>]+href=['"]([^"']+)["']/gm);
-
-        return content;
-    });
-
-    //
-    // global replace handler, takes a file content a regexp to macth with. The
-    // regexp should capture the assets relative filepath, it is then compared to
-    // the list of files on the filesystem to guess the actual revision of a file
-    //
-    // TODO: may not be needed in full
-    grunt.registerHelper('replace', function (content, regexp) {
-
-        return content.replace(regexp, function (match, src) {
-            var basename, dirname, filepaths, filepath, filename, res;
-
-            //do not touch external files or the root
-            if (src.match(/\/\//) || src.match(/^\/$/)) {
-                return match;
-            }
-
-            // Consider reference from site root
-            if (src.match(/^\//)) {
-                src = src.substr(1);
-            }
-
-            basename = path.basename(src);
-            dirname = path.dirname(src);
-
-            // XXX files won't change, the filepath should filter the original list
-            // of cached files (we need to treat the filename collision -- i.e. 2 files with same names
-            // in different subdirectories)
-            filepaths = grunt.file.expand(path.join('**/*') + basename);
-            filepath = filepaths.filter(function (f) {
-                return dirname === path.dirname(f);
-            })[0];
-
-            // not a file in temp, skip it
-            if (!filepath) {
-                return match;
-            }
-
-            filename = path.basename(filepath);
-            // handle the relative prefix (with always unix like path even on win32)
-            filename = [dirname, filename].join('/');
-
-            // if file not exists probaly was concatenated into another file so skip it
-            if (!filename) {
-                return '';
-            }
-
-            res = match.replace(src, filename);
-            // output some verbose info on what get replaced
-            grunt.log.ok(src).writeln('was ' + match).writeln('now ' + res);
-
-            return res;
-        });
-    });
+                return res;
+            });
+        }
+    };
+   
 };
