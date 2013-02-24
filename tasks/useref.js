@@ -6,9 +6,11 @@
 module.exports = function (grunt) {
     'use strict';
 
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-css');
+
+    grunt.loadNpmTasks('grunt-useref/node_modules/grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-useref/node_modules/grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-useref/node_modules/grunt-css');
+
 
     // TODO: check that `temp` is defined before proceeding
 
