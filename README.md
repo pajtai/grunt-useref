@@ -35,6 +35,8 @@ Inspiration (and large chunks of code) for `grunt-useref` was taken from the `us
 
 ## Usage
 
+[Here is a sample repo](https://github.com/pajtai/grunt-useref-example) that uses `grunt-useref`.
+
 To look at a working example see the [`grunt.js`](https://github.com/pajtai/grunt-useref/blob/master/grunt.js) of this module and look at [`test/input`](https://github.com/pajtai/grunt-useref/tree/master/test/input) of this module.
 
 Example usage with grunt.init:
@@ -144,7 +146,7 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
-* 0.0.12 - Feb 23, 2013 - Adding grunt 0.4.0 compatibility
+* 0.0.14 - Feb 23, 2013 - Adding grunt 0.4.0 compatibility
 * 0.0.11 - Jan 03, 2013 - Making grunt log output a little less obnoxious.
 * 0.0.10 - Jan 02, 2013 - Allow empty lines and comment within build blocks
 * 0.0.9  - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
