@@ -80,6 +80,8 @@ The example above has three build blocks on the same page. The first two blocks 
 minifies one file. They all put the new scripts into a newly named file. The original JavaScript files remain untouched
 in this case due to the naming of the output files.
 
+You can put comments and empty lines within build blocks.
+
 Assuming your `package.json.version` is `0.1.0` after the bump, and it is October 31, 2012 running `grunt useref` would
 create the following three files:
 
@@ -155,9 +157,10 @@ directory inside the `node_modules` folder of your project.
 
 ## Change Log
 
+* 0.0.16 - Mar 01, 2013 - Allow empty lines and comments within build blocks for Grunt0.4.0
 * 0.0.15 - Feb 23, 2013 - Adding grunt 0.4.0 compatibility
 * 0.0.11 - Jan 03, 2013 - Making grunt log output a little less obnoxious.
-* 0.0.10 - Jan 02, 2013 - Allow empty lines and comment within build blocks
+* 0.0.10 - Jan 02, 2013 - Allow empty lines and comments within build blocks
 * 0.0.9  - Dec 23, 2012 - Setting grunt-css dependency to 0.3.2, since 0.4.1 breaks useref - plan to update when grunt goes to 0.4
 * 0.0.7  - Nov 27, 2012 - fixed the css minification task so it does not have to be included in your grunt.js as a dependency
 * 0.0.6  - Nov 26, 2012 - updated css minification task and its dependency

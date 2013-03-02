@@ -149,7 +149,7 @@ module.exports = function (grunt) {
                  }
              }).reduce(function (a, b) {
                      b = ( b ? b.split(',') : '');
-                     return a.concat(b);
+                     return b ? a.concat(b) : a;
                  }, []);
 
              grunt.log.writeln("\n");
